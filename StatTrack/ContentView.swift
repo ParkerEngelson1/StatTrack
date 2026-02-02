@@ -17,22 +17,21 @@ struct ContentView: View {
     @State private var henry = Player(name: "Henry", stats: StatLine())
     @State private var charlie = Player(name: "Charlie", stats: StatLine())
     @State private var johnjohn = Player(name: "JohnJohn", stats: StatLine())
-    
     var body: some View {
-        Text("🥞 StatTrack V1.0 🥞")
+        Text("🥞 StatTrack V1.1 🥞") // title
             .font(Font.largeTitle)
             .bold()
             .italic()
             .padding()        
-        ScrollView {
-            HStack {
+        ScrollView { // allows scroll
+            HStack { // Hstack for each line
                 Text("John")
                     .bold()
-                PlayerStatsView(stats: $john.stats)
+                PlayerStatsView(stats: $john.stats) // pastes stat line
             }
             .font(.system(size: 20))
             .padding(10)
-            Text("---------------------------------------------------------------------------------------")
+           Divider()
             HStack {
                 Text("Oliver")
                     .bold()
@@ -40,7 +39,7 @@ struct ContentView: View {
             }
             .font(.system(size: 20))
             .padding(10)
-            Text("---------------------------------------------------------------------------------------")
+            Divider()
             HStack {
                 Text("Eric")
                     .bold()
@@ -48,7 +47,7 @@ struct ContentView: View {
             }
             .font(.system(size: 20))
             .padding(10)
-            Text("---------------------------------------------------------------------------------------")
+            Divider()
             HStack {
                 Text("Carter")
                     .bold()
@@ -56,7 +55,7 @@ struct ContentView: View {
             }
             .font(.system(size: 20))
             .padding(10)
-            Text("---------------------------------------------------------------------------------------")
+            Divider()
             HStack {
                 Text("Carson")
                     .bold()
@@ -64,7 +63,7 @@ struct ContentView: View {
             }
             .font(.system(size: 19))
             .padding(10)
-            Text("---------------------------------------------------------------------------------------")
+            Divider()
             HStack {
                 Text("Ryan")
                     .bold()
@@ -72,7 +71,7 @@ struct ContentView: View {
             }
             .font(.system(size: 20))
             .padding(10)
-            Text("---------------------------------------------------------------------------------------")
+            Divider()
             HStack {
                 Text("Henry")
                     .bold()
@@ -80,7 +79,7 @@ struct ContentView: View {
             }
             .font(.system(size: 20))
             .padding(10)
-            Text("---------------------------------------------------------------------------------------")
+            Divider()
             HStack {
                 Text("Charlie")
                     .bold()
@@ -88,7 +87,7 @@ struct ContentView: View {
             }
             .font(.system(size: 19))
             .padding(10)
-            Text("---------------------------------------------------------------------------------------")
+            Divider()
             HStack {
                 Text("JohnJohn")
                     .bold()
@@ -101,7 +100,7 @@ struct ContentView: View {
     }
 }
 
-struct StatLine {
+struct StatLine { // var holder
     var points = 0
     var shots = 0
     var rebounds = 0
@@ -110,17 +109,15 @@ struct StatLine {
     var blocks = 0
     var turnovers = 0
     var fouls = 0
-    var shootingPercent = 0.0
 }
 
-struct Player {
+struct Player { // object
     var name: String
     var stats: StatLine
 }
 
-struct PlayerStatsView: View {
+struct PlayerStatsView: View { // each line of player, holds buttons interprets statline
     @Binding var stats: StatLine
-    
     var body: some View {
         HStack {
             Text("PTS:")
@@ -139,11 +136,12 @@ struct PlayerStatsView: View {
             CounterButton(value: $stats.turnovers)
             Text("FL:")
             CounterButton(value: $stats.fouls)
+                .foulHighlight(fouls: stats.fouls) // calls color change
         }
     }
 }
 
-struct CounterButton: View {
+struct CounterButton: View { // button to press, goes up by 1 each click, hold to reset to 0
     @Binding var value: Int
     var body: some View {
         Button {
@@ -151,11 +149,25 @@ struct CounterButton: View {
         } label: {
             Text("\(value)  ")
                 .font(.title)
-            
         }
         .onLongPressGesture {
             value = 0
         }
+    }
+}
+
+struct FoulHighlightModifier: ViewModifier { // modifies the fouls to be red when 4
+    let fouls: Int
+    func body(content: Content) -> some View {
+        content
+            .foregroundColor(fouls >= 4 ? .red : .primary)            
+            .animation(.easeInOut, value: fouls)
+    }
+}
+
+extension View {
+    func foulHighlight(fouls: Int) -> some View {
+        self.modifier(FoulHighlightModifier(fouls: fouls))
     }
 }
 
